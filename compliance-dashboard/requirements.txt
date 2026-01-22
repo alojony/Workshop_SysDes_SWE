@@ -20,6 +20,5 @@ pytest==7.4.4
 pytest-asyncio==0.23.3
 httpx==0.26.0
 
-# Optional: PDF processing (for future sessions)
-# pypdf2==3.0.1
-# reportlab==4.0.9
+# PDF processing
+reportlab==4.0.9

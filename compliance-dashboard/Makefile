@@ -23,6 +23,12 @@ help:
 	@echo "  make docker-down  - Stop Docker containers"
 	@echo "  make docker-logs  - View Docker logs"
 	@echo ""
+	@echo "PDF Generation Commands:"
+	@echo "  make gen-pdfs     - Generate all PDF documents"
+	@echo "  make gen-ncr      - Generate NCR PDFs only"
+	@echo "  make gen-inspect  - Generate Inspection PDFs only"
+	@echo "  make gen-maint    - Generate Maintenance PDFs only"
+	@echo ""
 	@echo "Utility Commands:"
 	@echo "  make test         - Run tests"
 	@echo "  make clean        - Clean up temporary files"
@@ -91,6 +97,23 @@ clean:
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
 	@echo "Cleanup complete"
+
+# PDF Generation
+gen-pdfs:
+	@echo "Generating all PDF documents..."
+	python scripts/generate_all_pdfs.py
+
+gen-ncr:
+	@echo "Generating NCR PDFs..."
+	python scripts/generate_ncr_pdfs.py
+
+gen-inspect:
+	@echo "Generating Inspection Certificate PDFs..."
+	python scripts/generate_inspection_pdfs.py
+
+gen-maint:
+	@echo "Generating Maintenance Work Order PDFs..."
+	python scripts/generate_maintenance_pdfs.py
 
 # Full reset and restart workflow
 fresh-start: clean db-reset db-init ingest-clean
