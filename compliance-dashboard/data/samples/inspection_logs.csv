@@ -1,0 +1,21 @@
+inspection_id,site,production_line,supplier,part_number,part_description,inspection_date,inspector,result,measurement_value,measurement_unit,spec_min,spec_max,notes
+INS-2024-001,Factory-A,Line-1,Acme Corp,PN-12345,Bearing Housing,2024-01-15,John Smith,PASS,25.02,mm,24.95,25.05,Within tolerance
+INS-2024-002,Factory-A,Line-1,Acme Corp,PN-12346,Shaft,2024-01-15,John Smith,FAIL,15.12,mm,14.95,15.05,Out of spec - high
+INS-2024-003,Factory-B,Line-2,Beta Industries,PN-23456,Gear Assembly,2024-01-16,Jane Doe,PASS,99.8,%,99.5,100.0,Good quality
+INS-2024-004,Factory-A,Line-1,Gamma Tech,PN-34567,Bolt M8,2024-01-17,John Smith,FAIL,7.85,mm,7.95,8.05,Undersized
+INS-2024-005,Factory-C,Line-3,Delta Supply,PN-45678,Washer,2024-01-18,Bob Johnson,PASS,10.01,mm,9.95,10.05,OK
+INS-2024-006,Factory-A,Line-2,Acme Corp,PN-12345,Bearing Housing,2024-01-19,Sarah Lee,FAIL,25.12,mm,24.95,25.05,Oversized - reject
+INS-2024-007,Factory-B,Line-1,Beta Industries,PN-56789,Clutch Plate,2024-01-20,Jane Doe,CONDITIONAL,98.5,%,98.0,100.0,Borderline - monitor
+INS-2024-008,Factory-A,Line-1,Acme Corp,PN-12347,Pin,2024-01-21,John Smith,PASS,5.00,mm,4.98,5.02,Perfect
+INS-2024-009,Factory-C,Line-2,Gamma Tech,PN-67890,Spring,2024-01-22,Bob Johnson,FAIL,120.5,N,125.0,135.0,Weak spring force
+INS-2024-010,Factory-B,Line-3,Delta Supply,PN-78901,Gasket,2024-01-23,Jane Doe,PASS,2.01,mm,1.95,2.05,Good seal
+INS-2024-011,Factory-A,Line-1,Acme Corp,PN-12345,Bearing Housing,2024-01-24,Sarah Lee,FAIL,24.88,mm,24.95,25.05,Undersized
+INS-2024-012,Factory-B,Line-2,Beta Industries,PN-23456,Gear Assembly,2024-01-25,Jane Doe,PASS,99.9,%,99.5,100.0,Excellent
+INS-2024-013,Factory-C,Line-1,Gamma Tech,PN-34567,Bolt M8,2024-01-26,Bob Johnson,FAIL,8.12,mm,7.95,8.05,Oversized - scrap
+INS-2024-014,Factory-A,Line-2,Delta Supply,PN-45678,Washer,2024-01-27,John Smith,PASS,10.00,mm,9.95,10.05,Perfect fit
+INS-2024-015,Factory-B,Line-3,Acme Corp,PN-56789,Clutch Plate,2024-01-28,Jane Doe,FAIL,97.2,%,98.0,100.0,Below minimum spec
+INS-2024-016,Factory-A,Line-1,Beta Industries,PN-67890,Spring,2024-01-29,Sarah Lee,PASS,130.2,N,125.0,135.0,Good tension
+INS-2024-017,Factory-C,Line-2,Gamma Tech,PN-78901,Gasket,2024-01-30,Bob Johnson,CONDITIONAL,1.94,mm,1.95,2.05,Slightly thin
+INS-2024-018,Factory-A,Line-1,Acme Corp,PN-12345,Bearing Housing,2024-02-01,John Smith,FAIL,25.08,mm,24.95,25.05,Out of tolerance
+INS-2024-019,Factory-B,Line-2,Delta Supply,PN-23456,Gear Assembly,2024-02-02,Jane Doe,PASS,99.7,%,99.5,100.0,Good quality
+INS-2024-020,Factory-C,Line-3,Acme Corp,PN-34567,Bolt M8,2024-02-03,Bob Johnson,PASS,8.00,mm,7.95,8.05,Nominal

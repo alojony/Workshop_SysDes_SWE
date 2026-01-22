@@ -37,7 +37,8 @@ ENV/
 
 # Environment variables
 .env
-.env.local
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -52,11 +53,14 @@ docker/volumes/
 *.log
 logs/
 
-# Data (keep structure, ignore content in some folders)
+# Data (keep structure, ignore generated content)
+# Exclude raw data files (generated/ingested)
 data/raw/*.csv
 data/raw/*.pdf
-data/samples/*.csv
-data/samples/*.pdf
+data/raw/pdf/
+
+# Keep sample CSV files (these are source data)
+# Don't exclude data/samples/*.csv - we want to keep these!
 
 # Keep directory structure
 !data/raw/.gitkeep
@@ -79,6 +83,9 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
-# Workshop files
+# Workshop files and Claude Code
+.claude/
 Outline.md
 git_guide.md
+cleanup_repo.sh
+CLEANUP_INSTRUCTIONS.md

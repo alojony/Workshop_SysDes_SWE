@@ -1,0 +1,16 @@
+event_id,site,machine_id,machine_description,event_type,event_date,downtime_hours,technician,description,parts_replaced,notes
+MNT-2024-001,Factory-A,MCH-101,CNC Lathe #1,Preventive,2024-01-10,2.5,Mike Chen,Routine maintenance and calibration,Oil filter; Coolant pump,Scheduled maintenance completed
+MNT-2024-002,Factory-B,MCH-205,Hydraulic Press,Corrective,2024-01-12,8.0,Sarah Connor,Hydraulic leak repair,Seal kit; Hydraulic hose,Emergency repair
+MNT-2024-003,Factory-C,MCH-312,Conveyor Belt #3,Preventive,2024-01-14,1.0,Tom Hardy,Belt tension adjustment,None,Routine check
+MNT-2024-004,Factory-A,MCH-102,Milling Machine,Breakdown,2024-01-16,12.0,Mike Chen,Spindle bearing failure,Spindle bearing assembly; Motor coupling,Major repair required
+MNT-2024-005,Factory-B,MCH-206,Welding Robot,Preventive,2024-01-18,3.0,Lisa Wang,Software update and sensor calibration,Vision sensor,System upgrade
+MNT-2024-006,Factory-A,MCH-101,CNC Lathe #1,Corrective,2024-01-20,4.5,Mike Chen,Tool changer malfunction,Tool changer motor; Position sensor,Unscheduled repair
+MNT-2024-007,Factory-C,MCH-313,Packaging Machine,Breakdown,2024-01-22,6.0,Tom Hardy,Pneumatic system failure,Air compressor; Pressure regulator,Critical failure
+MNT-2024-008,Factory-B,MCH-207,Assembly Station,Preventive,2024-01-24,1.5,Sarah Connor,Annual inspection,None,All systems OK
+MNT-2024-009,Factory-A,MCH-103,Drill Press,Corrective,2024-01-26,2.0,Mike Chen,Chuck replacement,Drill chuck,Wear and tear
+MNT-2024-010,Factory-C,MCH-314,Paint Booth,Preventive,2024-01-28,4.0,Tom Hardy,Filter replacement and cleaning,Air filters; Exhaust filters,Routine maintenance
+MNT-2024-011,Factory-A,MCH-101,CNC Lathe #1,Breakdown,2024-01-30,10.0,Mike Chen,Control panel failure,PLC module; Display panel,Electronics failure
+MNT-2024-012,Factory-B,MCH-205,Hydraulic Press,Preventive,2024-02-01,2.0,Lisa Wang,Quarterly inspection,Hydraulic oil,Scheduled service
+MNT-2024-013,Factory-C,MCH-312,Conveyor Belt #3,Corrective,2024-02-03,3.5,Tom Hardy,Motor overheating,Cooling fan; Thermal sensor,Temperature issue
+MNT-2024-014,Factory-A,MCH-104,Grinder,Preventive,2024-02-05,1.0,Mike Chen,Grinding wheel replacement,Grinding wheel,Scheduled replacement
+MNT-2024-015,Factory-B,MCH-208,Inspection Table,Corrective,2024-02-07,0.5,Sarah Connor,LED light replacement,LED light strip,Minor repair

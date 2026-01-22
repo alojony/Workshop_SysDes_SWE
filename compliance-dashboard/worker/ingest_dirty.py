@@ -160,8 +160,6 @@ def load_csv_inspections(conn, document_id: int, file_path: Path) -> Dict[str, i
     - CSV parsing can fail
     - Data might be messy
     - Partial failures should be tracked, not crash everything
-
-    TODO for participants: Implement this function
     """
     attempted = 0
     succeeded = 0
@@ -177,11 +175,45 @@ def load_csv_inspections(conn, document_id: int, file_path: Path) -> Dict[str, i
                 attempted += 1
 
                 try:
-                    # TODO: Parse CSV row
-                    # TODO: Insert into inspections table
-                    # TODO: Handle missing/invalid data
+                    # Basic validation - check if inspection_id exists
+                    if not row.get('inspection_id'):
+                        raise ValueError("Missing inspection_id")
 
-                    # Placeholder - participants implement this
+                    # Check for duplicates (simple approach)
+                    cursor.execute(
+                        "SELECT id FROM inspections WHERE inspection_id = %s",
+                        (row['inspection_id'],)
+                    )
+                    if cursor.fetchone():
+                        # Already exists - skip
+                        succeeded += 1
+                        continue
+
+                    # Insert with minimal transformation
+                    cursor.execute("""
+                        INSERT INTO inspections
+                        (inspection_id, document_id, site, production_line, supplier,
+                         part_number, part_description, inspection_date, inspector, result,
+                         measurement_value, measurement_unit, spec_min, spec_max, notes)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        row.get('inspection_id'),
+                        document_id,
+                        row.get('site'),
+                        row.get('production_line'),
+                        row.get('supplier'),
+                        row.get('part_number'),
+                        row.get('part_description'),
+                        row.get('inspection_date'),
+                        row.get('inspector'),
+                        row.get('result', 'FAIL').upper(),  # Basic normalization
+                        float(row['measurement_value']) if row.get('measurement_value') else None,
+                        row.get('measurement_unit'),
+                        float(row['spec_min']) if row.get('spec_min') else None,
+                        float(row['spec_max']) if row.get('spec_max') else None,
+                        row.get('notes')
+                    ))
+
                     succeeded += 1
 
                 except Exception as e:
@@ -210,23 +242,169 @@ def load_csv_inspections(conn, document_id: int, file_path: Path) -> Dict[str, i
 def load_csv_ncrs(conn, document_id: int, file_path: Path) -> Dict[str, int]:
     """
     Load NCR CSV into database (dirty version)
-
-    TODO for participants: Implement this function
     """
-    # Similar structure to load_csv_inspections
-    # Participants implement this
-    pass
+    attempted = 0
+    succeeded = 0
+    failed = 0
+    errors = []
+
+    try:
+        with open(file_path, 'r') as f:
+            reader = csv.DictReader(f)
+            cursor = conn.cursor()
+
+            for row in reader:
+                attempted += 1
+
+                try:
+                    if not row.get('ncr_id'):
+                        raise ValueError("Missing ncr_id")
+
+                    # Check for duplicates
+                    cursor.execute(
+                        "SELECT id FROM ncrs WHERE ncr_id = %s",
+                        (row['ncr_id'],)
+                    )
+                    if cursor.fetchone():
+                        succeeded += 1
+                        continue
+
+                    # Find linked inspection if specified
+                    linked_inspection_id = None
+                    if row.get('linked_inspection_id'):
+                        cursor.execute(
+                            "SELECT id FROM inspections WHERE inspection_id = %s",
+                            (row['linked_inspection_id'],)
+                        )
+                        result = cursor.fetchone()
+                        if result:
+                            linked_inspection_id = result[0]
+
+                    # Insert NCR
+                    cursor.execute("""
+                        INSERT INTO ncrs
+                        (ncr_id, document_id, linked_inspection_id, site, supplier,
+                         part_number, part_description, severity, status, description,
+                         root_cause, corrective_action, opened_at, reviewed_at, closed_at)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        row.get('ncr_id'),
+                        document_id,
+                        linked_inspection_id,
+                        row.get('site'),
+                        row.get('supplier'),
+                        row.get('part_number'),
+                        row.get('part_description'),
+                        row.get('severity', 'MEDIUM').upper(),
+                        row.get('status', 'OPEN').upper(),
+                        row.get('description'),
+                        row.get('root_cause'),
+                        row.get('corrective_action'),
+                        row.get('opened_at'),
+                        row.get('reviewed_at') if row.get('reviewed_at') else None,
+                        row.get('closed_at') if row.get('closed_at') else None
+                    ))
+
+                    succeeded += 1
+
+                except Exception as e:
+                    failed += 1
+                    errors.append(f"Row {attempted}: {str(e)}")
+
+            cursor.close()
+            conn.commit()
+
+    except Exception as e:
+        return {
+            'attempted': attempted,
+            'succeeded': succeeded,
+            'failed': failed,
+            'error': str(e)
+        }
+
+    return {
+        'attempted': attempted,
+        'succeeded': succeeded,
+        'failed': failed,
+        'error': '; '.join(errors[:5]) if errors else None
+    }
 
 
 def load_csv_maintenance(conn, document_id: int, file_path: Path) -> Dict[str, int]:
     """
     Load maintenance CSV into database (dirty version)
-
-    TODO for participants: Implement this function
     """
-    # Similar structure to load_csv_inspections
-    # Participants implement this
-    pass
+    attempted = 0
+    succeeded = 0
+    failed = 0
+    errors = []
+
+    try:
+        with open(file_path, 'r') as f:
+            reader = csv.DictReader(f)
+            cursor = conn.cursor()
+
+            for row in reader:
+                attempted += 1
+
+                try:
+                    if not row.get('event_id'):
+                        raise ValueError("Missing event_id")
+
+                    # Check for duplicates
+                    cursor.execute(
+                        "SELECT id FROM maintenance_events WHERE event_id = %s",
+                        (row['event_id'],)
+                    )
+                    if cursor.fetchone():
+                        succeeded += 1
+                        continue
+
+                    # Insert maintenance event
+                    cursor.execute("""
+                        INSERT INTO maintenance_events
+                        (event_id, document_id, site, machine_id, machine_description,
+                         event_type, event_date, downtime_hours, technician, description,
+                         parts_replaced, notes)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        row.get('event_id'),
+                        document_id,
+                        row.get('site'),
+                        row.get('machine_id'),
+                        row.get('machine_description'),
+                        row.get('event_type'),
+                        row.get('event_date'),
+                        float(row['downtime_hours']) if row.get('downtime_hours') else None,
+                        row.get('technician'),
+                        row.get('description'),
+                        row.get('parts_replaced'),
+                        row.get('notes')
+                    ))
+
+                    succeeded += 1
+
+                except Exception as e:
+                    failed += 1
+                    errors.append(f"Row {attempted}: {str(e)}")
+
+            cursor.close()
+            conn.commit()
+
+    except Exception as e:
+        return {
+            'attempted': attempted,
+            'succeeded': succeeded,
+            'failed': failed,
+            'error': str(e)
+        }
+
+    return {
+        'attempted': attempted,
+        'succeeded': succeeded,
+        'failed': failed,
+        'error': '; '.join(errors[:5]) if errors else None
+    }
 
 
 def process_file(conn, file_path: Path):

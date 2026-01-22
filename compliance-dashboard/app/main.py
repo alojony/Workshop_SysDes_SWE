@@ -8,7 +8,7 @@ from datetime import datetime
 import psycopg2
 from app.settings import settings
 from app.schemas import HealthResponse
-from app.routes import qa, ops
+from app.routes import qa, ops, upload
 
 # Create FastAPI app
 app = FastAPI(
@@ -29,6 +29,7 @@ app.add_middleware(
 # Include routers
 app.include_router(qa.router)
 app.include_router(ops.router)
+app.include_router(upload.router)
 
 
 @app.get("/health", response_model=HealthResponse)

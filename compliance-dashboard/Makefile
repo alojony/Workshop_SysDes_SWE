@@ -9,13 +9,15 @@ help:
 	@echo "=========================================="
 	@echo ""
 	@echo "Setup Commands:"
+	@echo "  make venv         - Create Python virtual environment"
 	@echo "  make install      - Install Python dependencies"
 	@echo "  make db-init      - Initialize database schema"
 	@echo "  make db-reset     - Reset database (WARNING: deletes all data)"
 	@echo ""
 	@echo "Session Commands:"
-	@echo "  make ingest-dirty - Run dirty ingestion (Session 3)"
-	@echo "  make ingest-clean - Run clean ingestion (Session 4)"
+	@echo "  make ingest-dirty - Run dirty CSV ingestion (Session 3)"
+	@echo "  make ingest-clean - Run clean CSV ingestion (Session 4)"
+	@echo "  make ingest-pdf   - Run PDF ingestion"
 	@echo "  make api          - Start FastAPI server (Session 5)"
 	@echo ""
 	@echo "Docker Commands:"
@@ -36,17 +38,25 @@ help:
 	@echo ""
 
 # Setup
+venv:
+	@echo "Creating virtual environment..."
+	python3 -m venv venv
+	@echo "Virtual environment created!"
+	@echo "Activate it with: source venv/bin/activate"
+
 install:
-	pip install -r requirements.txt
+	@echo "Installing dependencies..."
+	python3 -m pip install -r requirements.txt
+	@echo "Installation complete!"
 
 # Database operations
 db-init:
 	@echo "Initializing database..."
-	python scripts/init_db.py
+	python3 scripts/init_db.py
 
 db-reset:
 	@echo "WARNING: This will delete all data!"
-	python scripts/reset_db.py
+	python3 scripts/reset_db.py
 
 # Data ingestion
 sample-data:
@@ -56,11 +66,15 @@ sample-data:
 
 ingest-dirty: sample-data
 	@echo "Running dirty ingestion..."
-	python worker/ingest_dirty.py
+	python3 worker/ingest_dirty.py
 
 ingest-clean: sample-data
 	@echo "Running clean ingestion..."
-	python worker/ingest_clean.py
+	python3 worker/ingest_clean.py
+
+ingest-pdf:
+	@echo "Running PDF ingestion..."
+	python3 worker/ingest_pdf.py
 
 # API
 api:
@@ -101,19 +115,19 @@ clean:
 # PDF Generation
 gen-pdfs:
 	@echo "Generating all PDF documents..."
-	python scripts/generate_all_pdfs.py
+	python3 scripts/generate_all_pdfs.py
 
 gen-ncr:
 	@echo "Generating NCR PDFs..."
-	python scripts/generate_ncr_pdfs.py
+	python3 scripts/generate_ncr_pdfs.py
 
 gen-inspect:
 	@echo "Generating Inspection Certificate PDFs..."
-	python scripts/generate_inspection_pdfs.py
+	python3 scripts/generate_inspection_pdfs.py
 
 gen-maint:
 	@echo "Generating Maintenance Work Order PDFs..."
-	python scripts/generate_maintenance_pdfs.py
+	python3 scripts/generate_maintenance_pdfs.py
 
 # Full reset and restart workflow
 fresh-start: clean db-reset db-init ingest-clean

@@ -266,21 +266,94 @@ def load_ncrs_clean(conn, document_id: int, file_path: Path) -> Dict:
 def load_maintenance_clean(conn, document_id: int, file_path: Path) -> Dict:
     """
     Load maintenance events with normalization
-
-    TODO for participants: Implement
     """
     attempted = 0
     succeeded = 0
     failed = 0
+    errors = []
 
-    # Participants implement this
-    # Similar pattern to inspections and NCRs
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        with open(file_path, 'r') as f:
+            reader = csv.DictReader(f)
+
+            for row_num, row in enumerate(reader, start=2):
+                attempted += 1
+
+                try:
+                    # Validate
+                    validation_errors = validate_row(
+                        row,
+                        required_fields=['event_id', 'site', 'machine_id', 'event_date'],
+                        row_num=row_num
+                    )
+
+                    if validation_errors:
+                        raise ValueError('; '.join(validation_errors))
+
+                    # Normalize
+                    event_id = clean_string(row.get('event_id'), 100)
+                    site = clean_string(row.get('site'), 100)
+                    machine_id = clean_string(row.get('machine_id'), 100)
+                    machine_description = clean_string(row.get('machine_description'))
+                    event_type = clean_string(row.get('event_type'), 50)
+                    event_date = normalize_date(row.get('event_date'))
+                    downtime_hours = normalize_decimal(row.get('downtime_hours'))
+                    technician = clean_string(row.get('technician'), 200)
+                    description = clean_string(row.get('description'))
+                    parts_replaced = clean_string(row.get('parts_replaced'))
+                    notes = clean_string(row.get('notes'))
+
+                    # Check for duplicate
+                    cursor.execute(
+                        "SELECT id FROM maintenance_events WHERE event_id = %s",
+                        (event_id,)
+                    )
+
+                    if cursor.fetchone():
+                        succeeded += 1
+                        continue
+
+                    # Insert
+                    cursor.execute("""
+                        INSERT INTO maintenance_events
+                        (event_id, document_id, site, machine_id, machine_description,
+                         event_type, event_date, downtime_hours, technician, description,
+                         parts_replaced, notes)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (
+                        event_id, document_id, site, machine_id, machine_description,
+                        event_type, event_date, downtime_hours, technician, description,
+                        parts_replaced, notes
+                    ))
+
+                    succeeded += 1
+
+                except Exception as e:
+                    failed += 1
+                    error_msg = f"Row {row_num}: {str(e)}"
+                    errors.append(error_msg)
+                    print(f"  WARNING: {error_msg}")
+
+        conn.commit()
+
+    except Exception as e:
+        conn.rollback()
+        return {
+            'attempted': attempted,
+            'succeeded': succeeded,
+            'failed': failed,
+            'error': f"Fatal error: {str(e)}"
+        }
+    finally:
+        cursor.close()
 
     return {
         'attempted': attempted,
         'succeeded': succeeded,
         'failed': failed,
-        'error': None
+        'error': '; '.join(errors[:10]) if errors else None
     }
 
 
