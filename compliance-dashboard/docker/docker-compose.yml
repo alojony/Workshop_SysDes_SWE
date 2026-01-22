@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: compliance-db
+    environment:
+      POSTGRES_DB: compliance_db
+      POSTGRES_USER: compliance_user
+      POSTGRES_PASSWORD: compliance_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U compliance_user -d compliance_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - compliance-network
+
+  # FastAPI Application
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: compliance-api
+    environment:
+      DATABASE_URL: postgresql://compliance_user:compliance_pass@db:5432/compliance_db
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: compliance_db
+      DB_USER: compliance_user
+      DB_PASSWORD: compliance_pass
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      API_RELOAD: "false"
+      LOG_LEVEL: INFO
+      ENVIRONMENT: production
+      DEBUG: "false"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../data:/app/data
+    networks:
+      - compliance-network
+    restart: unless-stopped
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: compliance-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@compliance.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - compliance-network
+    profiles:
+      - debug
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  compliance-network:
+    driver: bridge
